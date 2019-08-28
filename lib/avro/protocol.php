@@ -54,18 +54,18 @@ class AvroProtocol
      * @param $avro
      * @throws AvroSchemaParseException
      */
-    function real_parse($avro)
+    public function real_parse($avro)
     {
         $this->protocol = $avro['protocol'];
         $this->namespace = $avro['namespace'];
         $this->schemata = new AvroNamedSchemata();
         $this->name = $avro['protocol'];
 
-        if (!is_null($avro["types"])) {
+        if ($avro["types"] !== null) {
             AvroSchema::real_parse($avro["types"], $this->namespace, $this->schemata);
         }
 
-        if (!is_null($avro["messages"])) {
+        if ($avro["messages"] !== null) {
             foreach ($avro["messages"] as $messageName => $messageAvro) {
                 $message = new AvroProtocolMessage($messageName, $messageAvro, $this);
                 $this->messages[$messageName] = $message;
@@ -87,6 +87,8 @@ class AvroProtocolMessage
 
     public $response;
 
+    public $name;
+
     /**
      * AvroProtocolMessage constructor.
      * @param $name
@@ -96,12 +98,12 @@ class AvroProtocolMessage
     public function __construct($name, $avro, $protocol)
     {
         $this->name = $name;
-        $this->request = new AvroRecordSchema(new AvroName($name, null, $protocol->namespace), null, $avro{'request'}, $protocol->schemata, AvroSchema::REQUEST_SCHEMA);
+        $this->request = new AvroRecordSchema(new AvroName($name, null, $protocol->namespace), null, $avro['request'], $protocol->schemata, AvroSchema::REQUEST_SCHEMA);
 
         if (array_key_exists('response', $avro)) {
-            $this->response = $protocol->schemata->schema_by_name(new AvroName($avro{'response'}, $protocol->namespace, $protocol->namespace));
-            if ($this->response == null) {
-                $this->response = new AvroPrimitiveSchema($avro{'response'});
+            $this->response = $protocol->schemata->schema_by_name(new AvroName($avro['response'], $protocol->namespace, $protocol->namespace));
+            if ($this->response === null) {
+                $this->response = new AvroPrimitiveSchema($avro['response']);
             }
         }
     }
@@ -114,4 +116,3 @@ class AvroProtocolParseException extends AvroException
 {
 }
 
-;

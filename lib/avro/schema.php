@@ -56,7 +56,6 @@ class AvroSchemaParseException extends AvroException
 {
 }
 
-;
 
 /**
  * @package Avro
@@ -540,9 +539,9 @@ class AvroSchema
     /**
      * @return string the JSON-encoded representation of this Avro schema.
      */
-    public function __toString()
+    public function __toString(): string
     {
-        return json_encode($this->to_avro());
+        return (string)json_encode($this->to_avro());
     }
 
     /**
@@ -1185,9 +1184,7 @@ class AvroEnumSchema extends AvroNamedSchema
 
         foreach ($symbols as $symbol) {
             if (!is_string($symbol) || empty($symbol)) {
-                throw new AvroSchemaParseException(
-                    sprintf('Enum schema symbol must be a string %',
-                        print_r($symbol, true)));
+                throw new AvroSchemaParseException(sprintf('Enum schema symbol must be a string %s', $symbol));
             }
         }
 
@@ -1578,7 +1575,7 @@ class AvroField extends AvroSchema
         if ($this->has_default) {
             $this->default = $default;
         }
-        $this->check_order_value($order);
+        static::check_order_value($order);
         $this->order = $order;
         $this->doc = $doc;
     }
